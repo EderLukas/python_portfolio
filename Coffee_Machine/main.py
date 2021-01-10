@@ -101,7 +101,7 @@ def main():
             # ask for coin
             current_money_intake = take_money()
 
-            #check if enough money was given
+            # check if enough money was given
             if MENU[user_action]["cost"] > current_money_intake:
                 print("Sorry that's not enough money. Money refunded.")
                 continue
