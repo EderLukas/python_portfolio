@@ -11,7 +11,7 @@ Money: ${money}
 
 
 def make_coffee(order):
-    """Subtracts resources according to menu for coffee. returns true if successful,
+    """Checks if the coffee is doable with given resources or not. returns true if successful,
     false if not"""
     ingredients = MENU[order]["ingredients"]
 
