@@ -23,17 +23,7 @@ while right_guessed_states < 50:
 
     # Stop game and make list of missing states
     if answer_state == "Exit":
-        missing_states = {
-            "state": [],
-            "x": [],
-            "y": []
-        }
-
-        for state in data.state.to_list():
-            if state not in correct_guesses:
-                missing_states["state"].append(state)
-                missing_states["x"].append(data[data.state == state].x.item())
-                missing_states["y"].append(data[data.state == state].y.item())
+        missing_states = [state for state in data.state.to_list() if state not in correct_guesses]
 
         df = pandas.DataFrame(missing_states)
         df.to_csv("Missing_States.csv")
