@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from random import choice, randint, shuffle
 import pyperclip
+import json
 FONT = ("Arial", 12, "normal")
 
 
@@ -31,22 +32,58 @@ def generate_password():
 def add_credentials():
     """Checks input length, asks for conformation, writes credentials
     to file and deletes input fields (website/password)"""
+    website = ipt_website.get()
+    email = ipt_email.get()
+    password = ipt_password.get()
 
-    if len(ipt_website.get()) == 0 or len(ipt_email.get()) == 0 or len(ipt_password.get()) == 0:
+    new_data = {
+        website: {
+            "email": email,
+            "password": password,
+        }
+    }
+
+    if len(website) == 0 or len(email) == 0 or len(password) == 0:
         messagebox.showinfo(title="No entries", message="Please make sure you haven't "
                                                         "left any fields empty.")
     else:
-        is_ok = messagebox.askokcancel(title=ipt_website.get(), message=f"These are the details "
-                                                                        f"entered: \n"
-                                                                f"Email: {ipt_email.get()}\n"
-                                                                f"Password: {ipt_password.get()}\n"
-                                                                f"Is it ok to save?")
-        if is_ok:
-            with open("data.txt", mode="a") as file:
-                file.write(f"{ipt_website.get()} | {ipt_email.get()} | {ipt_password.get()}\n")
-
+        try:
+            with open("data.json", "r") as file:
+                data = json.load(file)
+        except FileNotFoundError:
+            with open("data.json", mode="w") as file:
+                json.dump(new_data, file, indent=4)
+        else:
+            data.update(new_data)
+            with open("data.json", mode="w") as file:
+                json.dump(data, file, indent=4)
+        finally:
             ipt_website.delete(0, END)
             ipt_password.delete(0, END)
+
+
+# ---------------------------- Search Password ------------------------ #
+def search_credentials():
+    website = ipt_website.get()
+
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="No Data saved yet", message="You do not have any "
+                                                               "saved credentials yet.")
+    else:
+        if not website:
+            messagebox.showinfo(title="No search entered", message="You did not enter any "
+                                                                   "values to search")
+        elif website in data:
+            messagebox.showinfo(title="Existing Credentials", message="Following credentials are "
+                                                                      f"existing for {website}:\n"
+                                                                      f"{data[website]['email']}\n"
+                                                                      f"{data[website]['password']}")
+        else:
+            messagebox.showinfo(title="No existing Credentials", message="No credentails "
+                                                                         f"saved for {website}.")
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -70,8 +107,8 @@ lbl_password = Label(text="Password:", font=FONT)
 lbl_password.grid(column=0, row=3)
 
 # Column 1 / Input fields
-ipt_website = Entry(width=35, font=FONT)
-ipt_website.grid(column=1, row=1, columnspan=2)
+ipt_website = Entry(width=23, font=FONT)
+ipt_website.grid(column=1, row=1)
 ipt_website.focus()
 ipt_email = Entry(width=35, font=FONT)
 ipt_email.insert(0, "eder.lukas@bluewin.ch")
@@ -85,6 +122,8 @@ btn_add.grid(column=1, row=4, columnspan=2)
 # Column 2 / Generate Password button
 btn_generate_pass = Button(text="Generate Password", command=generate_password)
 btn_generate_pass.grid(column=2, row=3)
+btn_generate_pass = Button(text="Search", command=search_credentials, width=14)
+btn_generate_pass.grid(column=2, row=1)
 
 window.mainloop()
 
