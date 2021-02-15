@@ -39,7 +39,7 @@ if difference > 5:
 
     # Get the 3 first articles from news endpoint Use https://newsapi.org/docs/endpoints/everything
     params = {
-        "q": COMPANY_NAME,
+        "qInTitle": COMPANY_NAME,
         "from": date_yesterday,
         "sortBy": "popularity",
         "apiKey": NE_API_KEY,
@@ -49,6 +49,7 @@ if difference > 5:
 
     three_latest_articles = [article for article in news_response.json()["articles"]][:3]
 
+    # Send all information to me
     client = Client(ACCOUNT_SID, AUTH_TOKEN)
     message = client.messages \
         .create(
