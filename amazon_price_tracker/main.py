@@ -14,7 +14,7 @@ def main():
     # Scrap for product price
     soup = BeautifulSoup(html_content, "lxml")
     price_string = soup.select_one("#priceblock_ourprice").text
-    # Formating the price to float
+    # Formatting the price to float
     price_without_euro = price_string.split("\xa0")[0]
     string_list = list(price_without_euro)
     string_list[string_list.index(",")] = "."
