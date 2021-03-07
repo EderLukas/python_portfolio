@@ -4,6 +4,7 @@ from env import chrome_driver_path
 import time as t
 
 SLEEP = 0.1
+UPGRADE_TIMEOUT = 5
 
 
 driver = webdriver.Chrome(executable_path=chrome_driver_path)
@@ -12,13 +13,13 @@ cookie = driver.find_element_by_id("cookie")
 upgrade_bar = driver.find_element_by_id("store")
 
 timeout = t.time() + 60 * 5
-five_second = t.time() + 5
+five_second = t.time() + UPGRADE_TIMEOUT
 while True:
     cookie.click()
 
     if t.time() > five_second:
         # reset timer for 5 seconds to check upgrades
-        five_second = t.time() + 5
+        five_second = t.time() + UPGRADE_TIMEOUT
 
         # Make a list of upgrades
         upgradeable_ids = []
@@ -38,7 +39,13 @@ while True:
                 pass
             price = int(price_string)
 
-            money = int(driver.find_element_by_id("money").text)
+            money_string = driver.find_element_by_id("money").text
+            try:
+                if money_string.index(","):
+                    money_string = money_string.replace(",", "")
+            except ValueError:
+                pass
+            money = int(money_string)
             if money > price:
                 t.sleep(SLEEP)
                 driver.find_element_by_id(upgradeable_ids[i]).click()
